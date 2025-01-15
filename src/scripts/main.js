@@ -119,20 +119,35 @@ async function uploadFile(formData) {
 function showPredictionResult(response) {
   const { message, data } = response;
 
-  result.innerHTML = `
-    <div class="response-message">
-      <i class="fas fa-check"></i>
-      <span class="message">${message}</span>
-    </div>
-    <div class="prediction-result">
-      <div>
-        <div class="result-title">Result:</div>
-        <div>${data.result}</div>
+  if (response.status === "success") {
+    result.innerHTML = `
+      <div class="response-message">
+        <i class="fas fa-check"></i>
+        <span class="message">${response.message}</span>
       </div>
-      <div>
-        <div class="result-title">Suggestion:</div>
-        <div>${data.suggestion}</div>
+      <div class="prediction-result">
+        <div>
+          <div class="result-title">Result:</div>
+          <div>${response.data.result}</div>
+        </div>
+        <div>
+          <div class="result-title">Suggestion:</div>
+          <div>${response.data.suggestion}</div>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  } else if (response.status === "fail") {
+    // Mengubah pesan menjadi lebih informatif
+    let message = response.message;
+    if (response.message.includes("Payload content length greater than maximum allowed")) {
+      message = "Ukuran gambar melebihi batas maksimal (1MB). Harap unggah gambar dengan ukuran lebih kecil.";
+    }
+  
+    result.innerHTML = `
+      <div class="response-message error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span class="message">${message}</span>
+      </div>
+    `;
+  }
 }
